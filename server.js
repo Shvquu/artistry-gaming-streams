@@ -53,8 +53,10 @@ const CONFIG = {
     REFRESH_MS:    60_000,                            // Cache-Dauer / Twitch-Abruf-Intervall
     OFFLINE_TTL_H: 12,                                // Channel nach X Std. aus Offline-Liste entfernen
 
-    // Optional: FiveM-Server für die Spielerzahl. Leer lassen, wenn nicht gewünscht.
-    // Beispiel: "http://123.45.67.89:30120"
+    // Spielerzahl-Quelle (eine von beiden wählen):
+    // 1) Empfohlen: Cfx.re Join-Code aus cfx.re/join/XXXXXX  → nur "XXXXXX" oder die volle URL
+    CFX_JOIN:       process.env.CFX_JOIN || "",
+    // 2) Alternativ: direkter FiveM-Endpunkt, z. B. "http://123.45.67.89:30120"
     FIVEM_ENDPOINT: process.env.FIVEM_ENDPOINT || "",
     PLAYERS_MAX:    Number(process.env.PLAYERS_MAX || 256)
 };
@@ -114,18 +116,45 @@ async function fetchUsers(tok, logins){
 }
 
 /* ----------------------- FIVEM SPIELERZAHL ----------------------- */
+// Extrahiert den reinen Join-Code, egal ob nur "abc123" oder eine volle URL übergeben wird
+function cfxCode(input){
+    const m = String(input).match(/(?:cfx\.re\/join\/)?([a-z0-9]+)\/?$/i);
+    return m ? m[1] : "";
+}
+
+// Variante 1: über den Cfx.re Join-Code (offizielle Server-Listing-API)
+async function fetchPlayersCfx(code){
+    const url = `https://servers-frontend.fivem.net/api/servers/single/${code}`;
+    const r = await fetch(url, { headers: { "User-Agent": "ArtistryStreams/1.0", "Accept": "application/json" } });
+    if(!r.ok) throw new Error("Cfx.re-API: "+r.status);
+    const j = await r.json();
+    const d = j.Data || j.data || {};
+    const players = d.clients ?? (Array.isArray(d.players) ? d.players.length : null);
+    const max = d.svMaxclients ?? d.sv_maxclients ?? Number(d.vars?.sv_maxClients) ?? CONFIG.PLAYERS_MAX;
+    return { players, playersMax: max || CONFIG.PLAYERS_MAX };
+}
+
+// Variante 2: direkter FiveM-Endpunkt (players.json / info.json)
+async function fetchPlayersDirect(base){
+    const [pRes, iRes] = await Promise.all([
+        fetch(base + "/players.json"),
+        fetch(base + "/info.json")
+    ]);
+    const players = pRes.ok ? (await pRes.json()).length : null;
+    let max = CONFIG.PLAYERS_MAX;
+    if(iRes.ok){ const info = await iRes.json(); max = Number(info?.vars?.sv_maxClients) || max; }
+    return { players, playersMax: max };
+}
+
 async function fetchPlayers(){
-    if(!CONFIG.FIVEM_ENDPOINT) return { players: null, playersMax: CONFIG.PLAYERS_MAX };
     try{
-        const [pRes, iRes] = await Promise.all([
-            fetch(CONFIG.FIVEM_ENDPOINT + "/players.json"),
-            fetch(CONFIG.FIVEM_ENDPOINT + "/info.json")
-        ]);
-        const players = pRes.ok ? (await pRes.json()).length : null;
-        let max = CONFIG.PLAYERS_MAX;
-        if(iRes.ok){ const info = await iRes.json(); max = Number(info?.vars?.sv_maxClients) || max; }
-        return { players, playersMax: max };
-    }catch{ return { players: null, playersMax: CONFIG.PLAYERS_MAX }; }
+        if(CONFIG.CFX_JOIN){
+            const code = cfxCode(CONFIG.CFX_JOIN);
+            if(code) return await fetchPlayersCfx(code);
+        }
+        if(CONFIG.FIVEM_ENDPOINT) return await fetchPlayersDirect(CONFIG.FIVEM_ENDPOINT);
+    }catch(e){ console.warn("Spielerzahl konnte nicht geladen werden:", e.message); }
+    return { players: null, playersMax: CONFIG.PLAYERS_MAX };
 }
 
 /* ----------------------- AGGREGATION + CACHE ----------------------- */
