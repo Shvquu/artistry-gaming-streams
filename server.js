@@ -15,16 +15,40 @@ const http = require("http");
 const fs   = require("fs");
 const path = require("path");
 
+/* ----------------------- .ENV LADEN ----------------------- */
+// Liest eine .env-Datei neben server.js (ohne externes Paket).
+// Bereits gesetzte echte Umgebungsvariablen werden NICHT überschrieben.
+function loadEnv(file){
+    try{
+        const txt = fs.readFileSync(file, "utf8");
+        for(let line of txt.split(/\r?\n/)){
+            line = line.trim();
+            if(!line || line.startsWith("#")) continue;
+            if(line.startsWith("export ")) line = line.slice(7);
+            const eq = line.indexOf("=");
+            if(eq === -1) continue;
+            const key = line.slice(0, eq).trim();
+            let val   = line.slice(eq + 1).trim();
+            // umschließende Anführungszeichen entfernen
+            if((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
+                val = val.slice(1, -1);
+            if(key && process.env[key] === undefined) process.env[key] = val;
+        }
+        return true;
+    }catch{ return false; }
+}
+const envLoaded = loadEnv(path.join(__dirname, ".env"));
+
 /* ----------------------- KONFIG ----------------------- */
 const CONFIG = {
-    PORT:          process.env.PORT          || 2005,
+    PORT:          process.env.PORT          || 3000,
 
     // Twitch Developer App: https://dev.twitch.tv/console/apps
-    CLIENT_ID:     process.env.TWITCH_CLIENT_ID,     //|| "kt920x90a52xn69p46s4xx782s41vd",
-    CLIENT_SECRET: process.env.TWITCH_CLIENT_SECRET, //|| "24fkhzf7hsiazs6olce5ynwfbhz3v7",
+    CLIENT_ID:     process.env.TWITCH_CLIENT_ID     || "DEINE_CLIENT_ID",
+    CLIENT_SECRET: process.env.TWITCH_CLIENT_SECRET || "DEIN_CLIENT_SECRET",
 
     GAME_ID:       "32982",                          // GTA V (Twitch game_id)
-    KEYWORDS:      ["[ArtistryGaming]", "[AGRP]", "[AG]"], // im Stream-Titel gesucht (lowercase)
+    KEYWORDS:      ["artistry", "[ag]", "[artistry]"], // im Stream-Titel gesucht (lowercase)
 
     REFRESH_MS:    60_000,                            // Cache-Dauer / Twitch-Abruf-Intervall
     OFFLINE_TTL_H: 12,                                // Channel nach X Std. aus Offline-Liste entfernen
@@ -192,7 +216,11 @@ function serveStatic(req, res){
     const file = path.join(PUBLIC, path.normalize(p).replace(/^(\.\.[/\\])+/,""));
     if(!file.startsWith(PUBLIC)) { res.writeHead(403).end("Forbidden"); return; }
     fs.readFile(file, (err, buf) => {
-        if(err){ res.writeHead(404).end("Not found"); return; }
+        if(err){
+            console.warn(`404  ${req.url}  →  Datei nicht gefunden: ${file}`);
+            res.writeHead(404).end("Not found");
+            return;
+        }
         res.writeHead(200, { "Content-Type": MIME[path.extname(file)] || "application/octet-stream" });
         res.end(buf);
     });
@@ -215,6 +243,19 @@ http.createServer(async (req, res) => {
     serveStatic(req, res);
 }).listen(CONFIG.PORT, () => {
     console.log(`\n  Artistry Streamerübersicht läuft:  http://localhost:${CONFIG.PORT}`);
+    console.log(envLoaded ? "  ✓ .env geladen." : "  ℹ  Keine .env gefunden – nutze Umgebungsvariablen / Standardwerte.");
+
+    // Selbstprüfung: liegt der public-Ordner mit streams.html daneben?
+    const index = path.join(PUBLIC, "streams.html");
+    if(!fs.existsSync(index)){
+        console.log("\n  ✗ FEHLER: public/streams.html wurde NICHT gefunden.");
+        console.log("    Erwartet hier: " + index);
+        console.log("    → Stelle sicher, dass der Ordner 'public' (mit streams.html,");
+        console.log("      style.css, streams.js) direkt neben server.js liegt.\n");
+    } else {
+        console.log("  ✓ public-Ordner gefunden – Seite ist erreichbar.");
+    }
+
     if(CONFIG.CLIENT_ID === "DEINE_CLIENT_ID")
-        console.log("  ⚠  Trage zuerst TWITCH_CLIENT_ID und TWITCH_CLIENT_SECRET ein (siehe README).\n");
+        console.log("  ⚠  Trage TWITCH_CLIENT_ID und TWITCH_CLIENT_SECRET ein (siehe README) – sonst Demo-Modus.\n");
 });
