@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artistry Gaming | Streamerübersicht</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="backdrop">
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#0a1219" d="M0,220 L160,150 L320,200 L480,120 L640,190 L800,110 L1000,200 L1180,140 L1320,200 L1440,160 L1440,320 L0,320 Z"/>
+        <path fill="#070c12" d="M0,260 L220,200 L420,250 L620,190 L860,255 L1080,205 L1280,260 L1440,225 L1440,320 L0,320 Z"/>
+    </svg>
+</div>
+
+<div class="app">
+    <!-- HEADER -->
+    <header>
+        <div class="brand">
+            <div class="brand-mark">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 L20 19 H4 Z" stroke="#0a1018" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.6 13 H15.4" stroke="#0a1018" stroke-width="1.6"/></svg>
+            </div>
+            <div class="brand-text">
+                <div class="wordmark">ARTISTRY</div>
+                <div class="sub">Streamerübersicht</div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat live">
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="15" height="13" rx="2"/><path d="M17 11l5-3v8l-5-3"/></svg></span>
+                <b id="st-streams">0</b><span class="slash">/</span><span class="lbl" id="st-streams-total">—</span>
+                <span class="lbl">Streams</span>
+            </div>
+            <div class="stat">
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+                <b id="st-viewers">0</b><span class="lbl">Zuschauer</span>
+            </div>
+            <div class="stat">
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5.5M18.5 20c0-2.5-1-4.6-2.5-5.6"/></svg></span>
+                <b id="st-players">—</b><span class="slash">/</span><span class="lbl" id="st-players-max">—</span>
+                <span class="lbl">Spieler</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="update-dot" id="updateDot"><span class="d"></span><span id="updateText">wird aktualisiert</span></div>
+            <button class="btn-login">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16v11l-4 4h-4l-3 3H7v-3H4V3Zm2 2v9h3v3l3-3h4l2-2V5H6Zm6 2h2v4h-2V7Zm4 0h2v4h-2V7Z"/></svg>
+                Anmelden
+            </button>
+            <button class="icon-btn" title="Hilfe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.9.4-1 .9-1 1.7M12 17h.01"/></svg></button>
+        </div>
+    </header>
+
+    <!-- BODY -->
+    <div class="body">
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar left">
+            <div class="side-section">
+                <div class="side-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Online Suche</div>
+                <div class="search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                    <input id="searchOnline" type="text" placeholder="Channelname oder Titel...">
+                </div>
+            </div>
+
+            <div class="side-section">
+                <div class="side-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Sortierung</div>
+                <div class="sort-list" id="sortList">
+                    <button class="sort-btn" data-sort="new">Neu <span class="dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12l7-7 7 7"/></svg></span></button>
+                    <button class="sort-btn active" data-sort="viewers">Zuschauer <span class="dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span></button>
+                    <button class="sort-btn" data-sort="alpha">Alphabetisch <span class="dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l7 7 7-7M12 5v14"/></svg></span></button>
+                    <button class="sort-btn" data-sort="uptime">Streamzeit <span class="dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span></button>
+                    <button class="sort-btn" data-sort="followers">Follower <span class="dir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span></button>
+                </div>
+            </div>
+
+            <div class="side-section">
+                <div class="side-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Ansicht</div>
+                <div class="seg" id="viewSeg">
+                    <button data-view="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Liste</button>
+                    <button data-view="grid" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Grid</button>
+                </div>
+                <div class="seg" id="themeSeg">
+                    <button data-theme="dark" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>Dunkel</button>
+                    <button data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg>Hell</button>
+                </div>
+            </div>
+
+            <div class="side-spacer"></div>
+            <div class="side-foot">Artistry Gaming · GTA V FiveM RP</div>
+        </aside>
+
+        <!-- MAIN -->
+        <main>
+            <div class="grid" id="grid"></div>
+            <div class="empty" id="empty" style="display:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <p>Keine Streams gefunden :(</p>
+            </div>
+        </main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="sidebar right">
+            <div class="side-section">
+                <div class="side-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Offline Suche</div>
+                <div class="search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                    <input id="searchOffline" type="text" placeholder="Channelname...">
+                </div>
+            </div>
+            <div class="side-section" style="padding-bottom:8px">
+                <div class="side-head" style="margin-bottom:4px">Offline / nicht auf AG <span id="offCount" style="margin-left:auto;color:var(--text-2)"></span></div>
+            </div>
+            <div class="offline-scroll" id="offlineList"></div>
+        </aside>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <span>v1.0 · ArtistryGaming.eu</span>
+        <div class="links">
+            <a href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4a18 18 0 0 0-4.5-1.4l-.2.5A15 15 0 0 1 8.7 3l-.2-.5A18 18 0 0 0 4 4C1.5 7.7.8 11.4 1 15a18 18 0 0 0 5.5 2.8l.4-.6c-.6-.2-1.2-.5-1.7-.8l.1-.1a13 13 0 0 0 11.4 0l.1.1c-.5.3-1.1.6-1.7.8l.4.6A18 18 0 0 0 23 15c.2-4.2-.7-7.9-3-11ZM8.5 13c-.8 0-1.5-.8-1.5-1.7s.6-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7Zm7 0c-.8 0-1.5-.8-1.5-1.7s.6-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7Z"/></svg>Discord</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7v3a7 7 0 0 0 14 0V9a7 7 0 0 0-7-7ZM5 12a3 3 0 0 1-3-3M19 12a3 3 0 0 0 3-3M12 19v3M8 22h8"/></svg>TeamSpeak</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16v11l-4 4h-4l-3 3H7v-3H4V3Zm2 2v9h3v3l3-3h4l2-2V5H6Zm6 2h2v4h-2V7Zm4 0h2v4h-2V7Z"/></svg>Twitch</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.5-.5-5.2a2.7 2.7 0 0 0-1.9-1.9C18.9 4.4 12 4.4 12 4.4s-6.9 0-8.6.5A2.7 2.7 0 0 0 1.5 6.8C1 8.5 1 12 1 12s0 3.5.5 5.2a2.7 2.7 0 0 0 1.9 1.9c1.7.5 8.6.5 8.6.5s6.9 0 8.6-.5a2.7 2.7 0 0 0 1.9-1.9C23 15.5 23 12 23 12ZM9.8 15.3V8.7l5.7 3.3-5.7 3.3Z"/></svg>YouTube</a>
+        </div>
+        <div class="right"><a href="#">Impressum</a><a href="#">Datenschutz</a></div>
+    </footer>
+</div>
+
+<script src="streams.js"></script>
+</body>
+</html>
